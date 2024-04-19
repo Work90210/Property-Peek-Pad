@@ -23,7 +23,7 @@ To get started with Property Peek Pad, you will need to have Flutter installed o
 1. Clone the repository:
 
    ```bash
-   git clone [repository-url]
+   git clone https://github.com/Work90210/Property-Peek-Pad.git
    ```
 
 2. Navigate to the project directory:
