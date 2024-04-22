@@ -67,10 +67,8 @@ class NetworkResponseModel {
 
 /// Abstract class defining the interface for network operations.
 abstract class NetworkProvider {
-  final String baseUrl;
-
   /// Constructs a [NetworkProvider] with the given base URL.
-  NetworkProvider(this.baseUrl);
+  NetworkProvider(String baseUrl);
 
   /// Sends a GET request to the specified [path].
   Future<NetworkResponseModel> get(

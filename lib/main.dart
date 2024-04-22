@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:funda_demo/network/network_provider.dart';
+import 'package:funda_demo/network/funda_provider.dart';
 import 'package:funda_demo/repository/listing_repository.dart';
+import 'package:funda_demo/routes.dart';
+import 'package:funda_demo/ui/home/home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,36 +19,24 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RepositoryProvider(
-      create: (context) => ListingRepository(
-        networkProvider: RepositoryProvider.of<NetworkProvider>(context),
-        apiKey: dotenv.env['FUNDA_API_KEY']!,
-      ),
+    return MultiRepositoryProvider(
+      providers: [
+        RepositoryProvider(
+          create: (context) => FundaProvider(),
+        ),
+        RepositoryProvider(
+          create: (context) => ListingRepository(
+            networkProvider: RepositoryProvider.of<FundaProvider>(context),
+            apiKey: dotenv.env['FUNDA_API_KEY'] ?? '',
+          ),
+        ),
+      ],
       child: const MaterialApp(
         title: 'Funda Demo',
-        home: MyHomePage(title: 'Funda Demo'),
+        initialRoute: HomePage.routeName,
+        onGenerateRoute: Routes.generateRoute,
         debugShowCheckedModeBanner: false,
       ),
     );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-        ),
-        body: const SizedBox());
   }
 }

@@ -72,7 +72,12 @@ The project relies on several Flutter and Dart packages, all of which are listed
 - `dio` - A powerful HTTP client for Dart, which supports Interceptors, Global configuration, FormData, Request Cancellation, File downloading, Timeout, etc.
 - `flutter_bloc` - Helps implement the BLoC (Business Logic Component) design pattern.
 - `flutter_dotenv` - Loads environment variables from `.env` files and makes them available throughout the Dart code.
-  For a full list of dependencies, refer to the pubspec.yaml file.
+- `Logger` - Provides a simple and effective logging solution.
+- `Json Annotation` - Supports JSON serialization.
+- `Carousel Slider` - A carousel slider widget.
+- `Intl` - Provides internationalization and localization capabilities.
+
+For a full list of dependencies, refer to the pubspec.yaml file.
 
 ## Configuration
 

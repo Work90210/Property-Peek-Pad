@@ -1,40 +1,48 @@
 import 'dart:async';
-import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:funda_demo/models/listing_detail_model.dart';
 import 'package:funda_demo/network/network_provider.dart';
+import 'package:funda_demo/repository/base_repository.dart';
+import 'package:logger/logger.dart';
 
 /// Repository for fetching listing details from the network.
-class ListingRepository {
+class ListingRepository extends BaseRepository {
   final NetworkProvider networkProvider;
   final String apiKey;
-  ListingDetailModel? _cachedListing;
+  final logger = Logger();
 
   /// Constructs a [ListingRepository] with the given [networkProvider] and [apiKey].
-  ListingRepository({required this.networkProvider, required this.apiKey});
+  ListingRepository({required this.networkProvider, required this.apiKey})
+      : super(); // Note: No need to pass parameters to super.
 
-  /// Fetches a single listing by ID.
-  ///
-  /// If [forceRefresh] is `false` (default), the repository will return the cached listing if available.
-  /// If [forceRefresh] is `true`, or if no cached listing is available, the repository will fetch the listing details from the network.
+  @override
+  int getEndpointVersion() => 1; // Define the API version used by this repository.
+
+  /// Fetches a single listing by ID. Always fetches from the network.
   /// Returns the [ListingDetailModel] if successful, otherwise returns `null`.
-  Future<ListingDetailModel?> getListingById(String listingId, {bool forceRefresh = false}) async {
-    if (_cachedListing != null && !forceRefresh) {
-      return _cachedListing;
-    }
+  Future<ListingDetailModel?> getListingById(String listingId) async {
+    // Construct the URL for fetching listing details
+    final url = '${getSubBaseURL()}/json/detail/$apiKey/koop/$listingId/';
 
     try {
-      final result = await networkProvider
-          .get('http://partnerapi.funda.nl/feeds/Aanbod.svc/json/detail/$apiKey/koop/$listingId/');
+      // Fetch data from the network provider
+      final result = await networkProvider.get(url);
+
+      // Check if the network request was successful
       if (!result.isSuccess) {
-        throw ErrorDescription(result.error?.message ?? 'Error fetching listing details');
+        logger.e('Error fetching listing details: ${result.error?.message}');
+        return null;
       }
 
-      _cachedListing = ListingDetailModel.fromJson(json.decode(result.data));
+      // Log the fetched listing data
+      logger.d('Fetched listing: ${result.data.toString()}');
 
-      return _cachedListing;
+      // Parse the fetched JSON data into a ListingDetailModel object
+      final listing = ListingDetailModel.fromJson(result.data);
+      return listing;
     } catch (e) {
+      // Log any errors that occur during the network request
+      logger.e('Error fetching listing: $e');
       return null;
     }
   }

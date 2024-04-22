@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
+import 'package:logger/logger.dart';
 
 import 'network_provider.dart';
 
@@ -20,6 +21,7 @@ class DioProvider extends NetworkProvider {
 
   int timeoutInSeconds;
   bool debugMode;
+  var logger = Logger();
 
   /// Constructs a [DioProvider] instance with the provided parameters.
   ///
@@ -60,12 +62,12 @@ class DioProvider extends NetworkProvider {
   Future<NetworkResponseModel> _performRequest(_NetworkRequestType type, String path,
       {Map<String, dynamic>? queryParams, dynamic body, Map<String, dynamic>? headers}) async {
     if (debugMode) {
-      print(queryParams != null
+      logger.d(queryParams != null
           ? "Requesting $path with QueryParams ${queryParams.toString()} - (${describeEnum(type)})"
           : "Requesting $path - (${describeEnum(type)})");
 
       if (body != null) {
-        print('Body: ${body.toString()}');
+        logger.d('Body: ${body.toString()}');
       }
     }
 
@@ -107,16 +109,16 @@ class DioProvider extends NetworkProvider {
       );
 
       if (debugMode) {
-        print("Request $path success (${response.statusCode}) - ${response.data}");
+        logger.d("errorData: $response");
       }
-    } on DioError catch (e) {
+    } on DioException catch (e) {
       response = e.response;
 
       if (debugMode) {
-        print('Request: $path  failed.');
-        print('Error: ${e.toString()}');
-        print('Response: $response\n');
-        print('Headers: ${response?.headers}');
+        logger.d('Request: $path  failed.');
+        logger.d('Error: ${e.toString()}');
+        logger.d('Response: $response\n');
+        logger.d('Headers: ${response?.headers}');
       }
     }
 
@@ -175,7 +177,7 @@ class DioProvider extends NetworkProvider {
     } on DioException catch (e) {
       response = e.response;
       if (debugMode) {
-        print(e);
+        logger.d(e);
       }
     }
 
